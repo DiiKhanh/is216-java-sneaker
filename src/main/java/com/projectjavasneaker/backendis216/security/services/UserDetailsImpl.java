@@ -24,6 +24,11 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private String password;
     private String role;
+    private String address;
+    private String phone;
+    private String gender;
+
+    private String birth;
 
     private Collection<? extends GrantedAuthority> authorities;
     public UserDetailsImpl(Long id, String username, String email, String password,
@@ -34,6 +39,22 @@ public class UserDetailsImpl implements UserDetails {
         this.password = password;
         this.authorities = authorities;
         this.role = role;
+    }
+
+    public UserDetailsImpl(Long id, String username, String email, String password,
+                           Collection<? extends GrantedAuthority> authorities, String role
+            ,String address, String phone, String gender, String birth
+    ) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
+        this.role = role;
+        this.address = address;
+        this.phone = phone;
+        this.gender = gender;
+        this.birth = birth;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -48,7 +69,11 @@ public class UserDetailsImpl implements UserDetails {
                 user.getEmail(),
                 user.getPassword(),
                 authorities,
-                user.getRole()
+                user.getRole(),
+                user.getAddress(),
+                user.getPhone(),
+                user.getGender(),
+                user.getBirth()
                 );
     }
 
@@ -65,6 +90,22 @@ public class UserDetailsImpl implements UserDetails {
         return email;
     }
     public String getRole(){return role;}
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public String getBirth() {
+        return birth;
+    }
 
     @Override
     public String getPassword() {
