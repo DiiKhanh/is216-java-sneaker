@@ -32,11 +32,19 @@ public class User {
     @Size(max = 120)
     private String password;
 
+    private String address;
+    private String phone;
+    private String gender;
+
+    private String birth;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(  name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    private String role;
 
     public User() {
     }
@@ -46,6 +54,30 @@ public class User {
         this.email = email;
         this.password = password;
     }
+
+    public User(String username, String email, String password, String address, String phone, String gender, String birth) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.address = address;
+        this.phone = phone;
+        this.gender = gender;
+        this.birth = birth;
+    }
+
+    public User(String username, String email, String password, String address, String phone, String gender, String birth
+    , String role
+    ) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.address = address;
+        this.phone = phone;
+        this.gender = gender;
+        this.birth = birth;
+        this.role = role;
+    }
+
 
     public Long getId() {
         return id;
@@ -85,5 +117,40 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getBirth() {
+        return birth;
+    }
+
+    public void setBirth(String birth) {
+        this.birth = birth;
+    }
+    public String getRole(){
+        return role;
     }
 }
