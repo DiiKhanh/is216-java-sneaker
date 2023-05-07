@@ -15,8 +15,11 @@ public class SignupRequest {
     @Email
     private String email;
 
+    private String address;
+    private String phone;
+    private String gender;
 
-
+    private String birth;
 
     private Set<String> role;
 
@@ -52,9 +55,42 @@ public class SignupRequest {
         Set<String> strRoles = new HashSet<>();
         strRoles.add("user");
         return strRoles;
+//        return role;
     }
 
     public void setRole(Set<String> role) {
         this.role = role;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getBirth() {
+        return birth;
+    }
+
+    public void setBirth(String birth) {
+        this.birth = birth;
     }
 }

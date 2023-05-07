@@ -1,10 +1,10 @@
 package com.projectjavasneaker.backendis216.security.services;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.projectjavasneaker.backendis216.models.ERole;
+import com.projectjavasneaker.backendis216.models.Role;
 import com.projectjavasneaker.backendis216.models.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,19 +21,19 @@ public class UserDetailsImpl implements UserDetails {
     private String username;
 
     private String email;
-
     @JsonIgnore
     private String password;
+    private String role;
 
     private Collection<? extends GrantedAuthority> authorities;
-
     public UserDetailsImpl(Long id, String username, String email, String password,
-                           Collection<? extends GrantedAuthority> authorities) {
+                           Collection<? extends GrantedAuthority> authorities, String role) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
+        this.role = role;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -41,12 +41,15 @@ public class UserDetailsImpl implements UserDetails {
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
 
+
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
-                authorities);
+                authorities,
+                user.getRole()
+                );
     }
 
     @Override
@@ -61,6 +64,7 @@ public class UserDetailsImpl implements UserDetails {
     public String getEmail() {
         return email;
     }
+    public String getRole(){return role;}
 
     @Override
     public String getPassword() {
