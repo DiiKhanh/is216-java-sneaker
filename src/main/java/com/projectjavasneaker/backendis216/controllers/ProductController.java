@@ -28,6 +28,7 @@ public class ProductController {
     @GetMapping("/all")
     ResponseEntity<ResponseObject> GetProducts(){
         List<Product> product = productService.getAllProducts();
+
         if(product != null){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject("ok","get all products successfully", product)
@@ -105,3 +106,4 @@ public class ProductController {
         );
     }
 }
+

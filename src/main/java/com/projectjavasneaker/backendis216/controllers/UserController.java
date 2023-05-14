@@ -1,7 +1,6 @@
 package com.projectjavasneaker.backendis216.controllers;
 
 
-import com.projectjavasneaker.backendis216.models.Product;
 import com.projectjavasneaker.backendis216.models.User;
 import com.projectjavasneaker.backendis216.payload.response.ResponseObject;
 import com.projectjavasneaker.backendis216.repository.UserRepository;
@@ -12,6 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -23,7 +25,7 @@ public class UserController {
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ResponseObject> getAllUsers(){
-        List<User> users = userRepository.findAll();;
+        List<User> users = userRepository.findAll();
         if(users.size() > 0){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject("ok","get all products successfully", users)
