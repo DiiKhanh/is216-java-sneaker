@@ -4,6 +4,8 @@ package com.projectjavasneaker.backendis216.models;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -27,6 +29,8 @@ public class Product {
     private String brandName;
     private String designer;
 
+    @ManyToMany(mappedBy = "products")
+    private List<Cart> carts = new ArrayList<>();
 
     public Product(){
 
