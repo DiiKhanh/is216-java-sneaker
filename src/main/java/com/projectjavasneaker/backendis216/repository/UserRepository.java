@@ -2,6 +2,7 @@ package com.projectjavasneaker.backendis216.repository;
 
 import java.util.Optional;
 
+import com.projectjavasneaker.backendis216.models.AuthenticationType;
 import com.projectjavasneaker.backendis216.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByEmail(String email);
 
     Boolean existsByPhone(String phone);
+
+    void updateAuthenticationType(String username, AuthenticationType authType);
 }
