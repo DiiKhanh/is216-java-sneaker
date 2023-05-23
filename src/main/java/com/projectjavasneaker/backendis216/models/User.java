@@ -46,8 +46,8 @@ public class User {
 
     private String role;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Cart    cart;
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+//    private Cart    cart;
     public User() {
     }
 

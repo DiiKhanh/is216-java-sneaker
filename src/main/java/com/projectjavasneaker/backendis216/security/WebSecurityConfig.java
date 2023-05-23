@@ -1,6 +1,8 @@
 package com.projectjavasneaker.backendis216.security;
 
 
+import com.projectjavasneaker.backendis216.security.oauth2.CustomerOAuth2User;
+import com.projectjavasneaker.backendis216.security.oauth2.CustomerOAuth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,6 +83,15 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 //
 //    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 //  }
+
+    @Override // configue login gooogle
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .and()
+                .oauth2Login().loginPage("/login").userInfoEndpoint().userService(null);
+    }
+
+    private CustomerOAuth2UserService oAuth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

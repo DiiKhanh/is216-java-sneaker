@@ -16,18 +16,12 @@ public class Cart {
     private Long productID;
     private int quantity;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+//    @OneToOne
+//    @JoinColumn(name = "user_id")
+//    private User user;
 
-    @ManyToMany
-    @JoinTable(
-            name = "cart_product",
-            joinColumns = @JoinColumn(name = "cart_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private List<Product> products = new ArrayList<>();
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Product product;
     public Cart() {
     }
 

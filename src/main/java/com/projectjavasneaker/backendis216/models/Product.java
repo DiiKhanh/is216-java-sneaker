@@ -29,8 +29,8 @@ public class Product {
     private String brandName;
     private String designer;
 
-    @ManyToMany(mappedBy = "products")
-    private List<Cart> carts = new ArrayList<>();
+//    @ManyToMany(mappedBy = "products")
+//    private List<Cart> carts = new ArrayList<>();
 
     public Product(){
 
