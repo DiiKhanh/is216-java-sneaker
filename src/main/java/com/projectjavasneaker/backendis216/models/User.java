@@ -17,6 +17,7 @@ import javax.validation.constraints.Size;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@Column(name = "UserId")
     private Long id;
 
     @NotBlank
