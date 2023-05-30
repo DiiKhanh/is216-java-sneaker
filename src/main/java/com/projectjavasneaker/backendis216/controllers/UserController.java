@@ -2,9 +2,12 @@ package com.projectjavasneaker.backendis216.controllers;
 
 
 import com.projectjavasneaker.backendis216.models.User;
+import com.projectjavasneaker.backendis216.payload.response.PageResponse;
 import com.projectjavasneaker.backendis216.payload.response.ResponseObject;
 import com.projectjavasneaker.backendis216.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +26,7 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("/all")
+    @GetMapping("/all-user")
     @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ResponseObject> getAllUsers(){
         List<User> users = userRepository.findAll();
@@ -34,6 +38,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
                 new ResponseObject("ok", "cannot find product", "")
         );
+    }
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<PageResponse> getAllUsersPage(@RequestParam Optional<Integer> page){
+       Page<User> pageUsers = userRepository.findAll(PageRequest.of(page.orElse(0), 6));
+       return ResponseEntity.status(HttpStatus.OK).body(
+               new PageResponse(page, pageUsers.getSize(), pageUsers.getTotalElements(),
+                       pageUsers.getTotalPages(),
+                       pageUsers.getContent()
+                       )
+       );
     }
 
 //    sua
