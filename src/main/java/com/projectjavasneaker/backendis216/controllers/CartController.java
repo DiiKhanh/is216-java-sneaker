@@ -1,0 +1,61 @@
+package com.projectjavasneaker.backendis216.controllers;
+
+import com.projectjavasneaker.backendis216.models.Cart;
+import com.projectjavasneaker.backendis216.models.CartDetails;
+import com.projectjavasneaker.backendis216.models.Product;
+import com.projectjavasneaker.backendis216.payload.request.CartRequest;
+import com.projectjavasneaker.backendis216.services.CartDetailsService;
+import com.projectjavasneaker.backendis216.services.CartService;
+import com.projectjavasneaker.backendis216.services.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/cart")
+public class CartController {
+    @Autowired
+    private CartService cartService;
+    @Autowired
+    ProductService productService;
+
+    public CartController(CartService cartService, ProductService productService) {
+        this.cartService = cartService;
+        this.productService = productService;
+    }
+
+    @PostMapping("/{cartId}/addProduct")
+    public ResponseEntity<?> addProductToCart(@PathVariable Long cartId,
+                                              @RequestBody CartRequest request) {
+        cartService.addProductToCart(cartId, request.getProductId(), 1);
+        return ResponseEntity.ok("Product added to cart successfully.");
+    }
+
+    @DeleteMapping("/{cartId}/products/{productId}")  // Xóa sản phẩm khỏi giỏ hàng
+    public ResponseEntity<?> removeProductFromCart(@PathVariable Long cartId, @PathVariable Long productId) {
+        cartService.removeProductFromCart(cartId, productId);
+        return ResponseEntity.ok("Product removed from cart");
+    }
+
+    @GetMapping("/{cartId}/products")        // Lấy thông tin giỏ hàng
+    public ResponseEntity<List<CartDetails>> getCart(@PathVariable Long cartId) {
+        List<CartDetails> cartDetails = cartService.getAllCartDetails(cartId);
+        return ResponseEntity.ok(cartDetails);
+    }
+
+    @PostMapping("/{cartId}/products/{productId}/increase")         // Tăng số lượng sản phẩm
+    public ResponseEntity<?> increaseCartItemQuantity(@PathVariable Long cartId, @PathVariable Long productId) {
+        cartService.increaseCartItemQuantity(cartId, productId);
+        return ResponseEntity.ok("Cart item quantity increased");
+    }
+
+
+    @PostMapping("/{cartId}/products/{productId}/decrease")     // Giảm số lượng sản phẩm
+    public ResponseEntity<?> decreaseCartItemQuantity(@PathVariable Long cartId, @PathVariable Long productId) {
+        cartService.decreaseCartItemQuantity(cartId, productId);
+        return ResponseEntity.ok("Cart item quantity decreased");
+    }
+}
