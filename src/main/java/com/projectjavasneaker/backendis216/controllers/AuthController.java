@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.projectjavasneaker.backendis216.models.Cart;
 import com.projectjavasneaker.backendis216.models.Role;
 import com.projectjavasneaker.backendis216.models.User;
 import com.projectjavasneaker.backendis216.payload.request.LoginRequest;
@@ -16,6 +17,7 @@ import com.projectjavasneaker.backendis216.payload.response.JwtResponse;
 import com.projectjavasneaker.backendis216.payload.response.MessageResponse;
 import com.projectjavasneaker.backendis216.models.ERole;
 import com.projectjavasneaker.backendis216.payload.response.ResponseObject;
+import com.projectjavasneaker.backendis216.repository.CartRepository;
 import com.projectjavasneaker.backendis216.repository.RoleRepository;
 import com.projectjavasneaker.backendis216.repository.UserRepository;
 import com.projectjavasneaker.backendis216.security.jwt.JwtUtils;
@@ -52,6 +54,8 @@ public class AuthController {
     @Autowired
     PasswordEncoder encoder;
 
+    @Autowired
+    CartRepository cartRepository;
     @Autowired
     JwtUtils jwtUtils;
 
@@ -132,6 +136,11 @@ public class AuthController {
                 }
             });
         }
+        Cart cart = new Cart();
+        user.setCart(cart);
+        cart.setUser(user);
+
+        cartRepository.save(cart);
 
         user.setRoles(roles);
         userRepository.save(user);

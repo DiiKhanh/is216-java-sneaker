@@ -1,48 +1,104 @@
 package com.projectjavasneaker.backendis216.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import javax.persistence.Entity;
+import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Table(name = "cart")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Long userId;
-    private Long productID;
-    private int quantity;
+    @Column(name = "CARTID")
+    private Long CartId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    private Set<CartDetails> cartDetails;
+
+    public void updateTotalPrice() {
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (CartDetails cartDetail : cartDetails) {
+            totalPrice = totalPrice.add(cartDetail.getProduct().getProductPrice().multiply(BigDecimal.valueOf(cartDetail.getQuantity())));
+        }
+        this.total = totalPrice;
+    }
+
+    public Set<CartDetails> getCartDetails() {
+        return cartDetails;
+    }
+
+    public void setCartDetails(Set<CartDetails> cartDetails) {
+        this.cartDetails = cartDetails;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    private BigDecimal total; // Tổng tiền trong giỏ hàng
+
+
+
+// sai
+//    public void addProduct(Product product, int quantity) {
+//        // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
+//        // Nếu đã tồn tại, tăng số lượng sản phẩm
+//        // Nếu chưa tồn tại, thêm sản phẩm vào giỏ hàng
+//        // ==> Giống như sơ đồ activity
+//
+//        // Kiểm tra sản phẩm đã tồn tại trong giỏ hàng hay chưa
+//        boolean productExistsInCart = ListProductInCart.stream()
+//                .anyMatch(p -> p.getId().equals(product.getId()));
+//
+//        if (productExistsInCart) {
+//            // Sản phẩm đã tồn tại trong giỏ hàng, tăng số lượng sản phẩm
+//            for (Product p : ListProductInCart) {
+//                if (p.getId().equals(product.getId())) {
+//                    // Tăng số lượng sản phẩm trong giỏ hàng
+//                    p.setQuantity(p.getQuantity() + quantity);
+//                    break;
+//                }
+//            }
+//        } else {
+//            // Sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm vào giỏ hàng
+//            product.setQuantity(quantity);
+//            ListProductInCart.add(product);
+//        }
+//
+//        // Cập nhật tổng tiền trong giỏ hàng
+//        this.total = this.total.add(product.getProductPrice().multiply(BigDecimal.valueOf(quantity)));
+//    }
 
     public Cart() {
     }
 
-    public Cart(Long id, Long userId, int quantity) {
-        this.id = id;
-        this.userId = userId;
-        this.quantity = quantity;
+    public Cart(Long id) {
+        this.CartId = id;
+
     }
 
     public Long getId() {
-        return id;
+        return CartId;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.CartId = id;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setTotal(BigDecimal total) {
+        this.total = total;
     }
 }
+

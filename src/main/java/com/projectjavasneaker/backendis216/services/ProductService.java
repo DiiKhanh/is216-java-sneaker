@@ -11,5 +11,5 @@ public interface ProductService {
 
     public Product addNewProduct(Product product);
     public Optional<Product> getProduct(Long id);
-
+    public Product getProductById(Long id);
 }
