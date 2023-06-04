@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class UserDetailsImpl implements UserDetails {
+
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -29,7 +30,7 @@ public class UserDetailsImpl implements UserDetails {
     private String gender;
 
     private String birth;
-
+    private boolean accountNonLocked;
     private Collection<? extends GrantedAuthority> authorities;
     public UserDetailsImpl(Long id, String username, String email, String password,
                            Collection<? extends GrantedAuthority> authorities, String role) {
@@ -56,6 +57,23 @@ public class UserDetailsImpl implements UserDetails {
         this.gender = gender;
         this.birth = birth;
     }
+    //
+    public UserDetailsImpl(Long id, String username, String email, String password,
+            Collection<? extends GrantedAuthority> authorities, String role
+            ,String address, String phone, String gender, String birth, boolean accountNonLocked
+    		) {
+	this.id = id;
+	this.username = username;
+	this.email = email;
+	this.password = password;
+	this.authorities = authorities;
+	this.role = role;
+	this.address = address;
+	this.phone = phone;
+	this.gender = gender;
+	this.birth = birth;
+	this.accountNonLocked = accountNonLocked;
+    }
 
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
@@ -72,7 +90,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getAddress(),
                 user.getPhone(),
                 user.getGender(),
-                user.getBirth()
+                user.getBirth(),
+                user.isAccountNonLocked()
                 );
     }
 
@@ -123,7 +142,8 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+    	 return  accountNonLocked;
+//    	return true;
     }
 
     @Override

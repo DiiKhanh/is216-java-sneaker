@@ -51,6 +51,18 @@ public class UserController {
        );
     }
 
+  //lockuser
+    @PutMapping("/lock/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<ResponseObject> LockUser(@PathVariable Long id){
+  	    User existUser = userRepository.findById(id).map((user) -> {
+  	        user.setAccountNonLocked(false);
+  	        return userRepository.save(user);
+  	    }).orElse(null);
+  	    return ResponseEntity.status(HttpStatus.OK).body(
+  	            new ResponseObject("ok", "lock user success", existUser)
+  	    );	    
+  	}
 //    sua
 //@PutMapping("/{id}")
 //@PreAuthorize("hasRole('ADMIN')")

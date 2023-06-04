@@ -37,12 +37,17 @@ public class User {
     private String gender;
 
     private String birth;
+    
+    
+    private boolean accountNonLocked=true;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(  name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+    
+    
 
     private String role;
 
@@ -78,8 +83,22 @@ public class User {
         this.role = role;
     }
 
+//    
+    public User(@NotBlank @Size(max = 20) String username, @NotBlank @Size(max = 50) @Email String email,
+			@NotBlank @Size(max = 120) String password, String address, String phone, String gender, String birth,
+			boolean accountNonLocked, String role) {
+		this.username = username;
+		this.email = email;
+		this.password = password;
+		this.address = address;
+		this.phone = phone;
+		this.gender = gender;
+		this.birth = birth;
+		this.accountNonLocked = accountNonLocked;
+		this.role = role;
+	}
 
-    public Long getId() {
+	public Long getId() {
         return id;
     }
 
@@ -153,4 +172,14 @@ public class User {
     public String getRole(){
         return role;
     }
+
+	public boolean isAccountNonLocked() {
+		return accountNonLocked;
+	}
+
+	public void setAccountNonLocked(boolean accountNonLocked) {
+		this.accountNonLocked = accountNonLocked;
+	}
+    
+    
 }
