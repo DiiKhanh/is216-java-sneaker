@@ -2,10 +2,15 @@ package com.projectjavasneaker.backendis216.controllers;
 
 
 import com.projectjavasneaker.backendis216.models.Product;
+import com.projectjavasneaker.backendis216.models.User;
+import com.projectjavasneaker.backendis216.payload.response.PageResponse;
 import com.projectjavasneaker.backendis216.payload.response.ResponseObject;
 import com.projectjavasneaker.backendis216.repository.ProductRepository;
 import com.projectjavasneaker.backendis216.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,6 +44,28 @@ public class ProductController {
         );
 
     }
+
+    @GetMapping("/all-products")
+    ResponseEntity<PageResponse> getAllProductPage(@RequestParam Optional<Integer> page){
+        Page<Product> pageProducts = productRepository.findAll(PageRequest.of(page.orElse(0), 6));
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new PageResponse(page, pageProducts.getSize(), pageProducts.getTotalElements(),
+                        pageProducts.getTotalPages(),
+                        pageProducts.getContent()
+                )
+        );
+    }
+    @GetMapping("/shop-products")
+    ResponseEntity<PageResponse> getShopProductPage(@RequestParam Optional<Integer> page){
+        Page<Product> pageProducts = productRepository.findAll(PageRequest.of(page.orElse(0), 10));
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new PageResponse(page, pageProducts.getSize(), pageProducts.getTotalElements(),
+                        pageProducts.getTotalPages(),
+                        pageProducts.getContent()
+                )
+        );
+    }
+
 
     //    add product
     @PostMapping("/add")
