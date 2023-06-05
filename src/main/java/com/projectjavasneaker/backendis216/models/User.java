@@ -48,6 +48,9 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Cart cart;
 
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private Set<Invoice> invoices;
+
     public Cart getCart() {
         return cart;
     }

@@ -34,6 +34,9 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private Set<CartDetails> cartDetails;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private Set<InvoiceDetails> invoiceDetails;
+
     public Product(){
 
     }
