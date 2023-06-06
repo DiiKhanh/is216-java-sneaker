@@ -1,25 +1,41 @@
-package com.projectjavasneaker.backendis216.services;
+package com.projectjavasneaker.backendis216.services.Impl;
 
 import com.projectjavasneaker.backendis216.Exception.NotFoundException;
 import com.projectjavasneaker.backendis216.models.Cart;
 import com.projectjavasneaker.backendis216.models.CartDetails;
+import com.projectjavasneaker.backendis216.models.Invoice;
+import com.projectjavasneaker.backendis216.models.InvoiceDetails;
 import com.projectjavasneaker.backendis216.models.Product;
-import com.projectjavasneaker.backendis216.repository.CartRepository;
-import com.projectjavasneaker.backendis216.repository.ProductRepository;
+import com.projectjavasneaker.backendis216.repository.*;
+import com.projectjavasneaker.backendis216.services.CartService;
+import com.projectjavasneaker.backendis216.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
-public class CartServiceImpl implements CartService{
+public class CartServiceImpl implements CartService {
     @Autowired
     private CartRepository cartRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private InvoiceRepository invoiceRepository;
+    @Autowired
+    private InvoiceDetailsRepository invoiceDetailsRepository;
+    @Autowired
+    private InvoiceService invoiceService;
+    @Autowired
+    private CartDetailsRepository cartDetailsRepository;
+
+    public void setInvoiceService(InvoiceService invoiceService) {
+        this.invoiceService = invoiceService;
+    }
+
     public CartServiceImpl(CartRepository cartRepository, ProductRepository productRepository) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
@@ -66,13 +82,18 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public Cart getCartById(Long cartId) {
-        return cartRepository.findById(cartId).orElseThrow(() -> new NotFoundException("Cart not found"));
+        return this.cartRepository.findById(cartId).orElseThrow(() -> new NotFoundException("Cart not found"));
     }
     @Override
     public List<CartDetails> getAllCartDetails(Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new NotFoundException("Cart not found"));
-        return new ArrayList<>(cart.getCartDetails());
+//        if (cart.getCartDetails() == null) {
+//            cart.setCartDetails(new ArrayList<>());
+//        }
+        return cart.getCartDetails();
     }
+
+
     @Override
     public void removeProductFromCart(Long cartId, Long productId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new NotFoundException("Cart not found"));
@@ -111,7 +132,8 @@ public class CartServiceImpl implements CartService{
                     cartDetail.setTotal(product.getProductPrice().multiply(BigDecimal.valueOf(newQuantity)));
 
                 } else {
-                    cart.getCartDetails().remove(cartDetail);
+                    // cart.getCartDetails().remove(cartDetail);
+                    cartRepository.deleteById(cartDetail.getCartDetailsId());
                 }
                 break;
             }
@@ -120,4 +142,40 @@ public class CartServiceImpl implements CartService{
         cart.updateTotalPrice();
         cartRepository.save(cart);
     }
+    @Override
+    public void createInvoiceFromCart(Long cartId) {
+        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new NotFoundException("Cart not found"));
+        // Kiểm tra giỏ hàng có sản phẩm không
+        if (cart.getCartDetails().isEmpty()) {
+            throw new IllegalStateException("Cart is empty. Cannot create invoice.");
+        }
+        // Tạo đối tượng Invoice
+        Invoice invoice = invoiceService.createInvoice();
+        // Thiết lập các thông tin khác cho invoice
+        //invoice.setStatus("Đang xử lý.");
+        invoice.setUsers(cart.getUser());
+        invoice.setTotalPrice(cart.getTotal());
+
+        // Lưu invoice vào cơ sở dữ liệu
+            // Lưu thông tin hóa đơn vào cơ sở dữ liệu
+        invoiceService.saveInvoice(invoice);
+//            // Xóa giỏ hàng sau khi tạo hóa đơn
+//            Cart cart = invoice.getCart();
+//            cartRepository.delete(cart);
+
+        // Tạo invoice details
+        invoiceService.createInvoiceDetails(invoice, cart);
+        // Sau khi tạo thành công giỏ hàng, xóa hết sản phẩm trong giỏ hàng
+        clearCart(cart);
+    }
+
+    public void clearCart(Cart cart) {
+        List<CartDetails> cartDetails = cart.getCartDetails();
+        cartDetailsRepository.deleteAll(cartDetails);
+        cart.updateTotalPrice();
+        cartRepository.save(cart);
+    }
+
+
+
 }

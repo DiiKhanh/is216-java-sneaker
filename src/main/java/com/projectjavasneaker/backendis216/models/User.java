@@ -1,8 +1,10 @@
 package com.projectjavasneaker.backendis216.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -45,11 +47,20 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-    @OneToOne(mappedBy = "user")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonIgnore
     private Cart cart;
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private Set<Invoice> invoices;
+    private List<Invoice> invoices;
+
+    public List<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(List<Invoice> invoices) {
+        this.invoices = invoices;
+    }
 
     public Cart getCart() {
         return cart;

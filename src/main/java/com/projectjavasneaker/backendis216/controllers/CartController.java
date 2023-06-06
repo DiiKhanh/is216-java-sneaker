@@ -10,6 +10,7 @@ import com.projectjavasneaker.backendis216.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +28,9 @@ public class CartController {
         this.productService = productService;
     }
 
+
     @PostMapping("/{cartId}/addProduct")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> addProductToCart(@PathVariable Long cartId,
                                               @RequestBody CartRequest request) {
         cartService.addProductToCart(cartId, request.getProductId(), 1);
@@ -46,16 +49,37 @@ public class CartController {
         return ResponseEntity.ok(cartDetails);
     }
 
+//    @GetMapping("/{cartId}/getCart")        // Lấy thông tin giỏ hàng
+//    public Cart getCart(@PathVariable Long cartId) {
+//        return this.cartService.getCartById(cartId);
+//    }
+
+
+//    @GetMapping("/{cartId}/products") // Lấy thông tin giỏ hàng
+//    public ResponseEntity<List<CartDetails>> getCart(@PathVariable Long cartId) {
+//        Cart cart = cartService.getCartById(cartId);
+//        List<CartDetails> cartDetails = cart.getAllCartDetails();
+//        return ResponseEntity.ok(cartDetails);
+//    }
+
     @PostMapping("/{cartId}/products/{productId}/increase")         // Tăng số lượng sản phẩm
     public ResponseEntity<?> increaseCartItemQuantity(@PathVariable Long cartId, @PathVariable Long productId) {
         cartService.increaseCartItemQuantity(cartId, productId);
         return ResponseEntity.ok("Cart item quantity increased");
     }
 
-
     @PostMapping("/{cartId}/products/{productId}/decrease")     // Giảm số lượng sản phẩm
     public ResponseEntity<?> decreaseCartItemQuantity(@PathVariable Long cartId, @PathVariable Long productId) {
         cartService.decreaseCartItemQuantity(cartId, productId);
         return ResponseEntity.ok("Cart item quantity decreased");
+    }
+
+    // Xuất hóa đơn
+    @PostMapping("/{cartId}/checkout")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> checkout(@PathVariable Long cartId) {
+        cartService.createInvoiceFromCart(cartId);
+        //cartService.clearCart(cartId); // Xóa tất cả sản phẩm đã có trong giỏ hàng sau khi thanh toán
+        return ResponseEntity.ok("Checkout successful");
     }
 }

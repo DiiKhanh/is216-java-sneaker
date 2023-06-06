@@ -1,10 +1,14 @@
 package com.projectjavasneaker.backendis216.controllers;
 
 
+import com.projectjavasneaker.backendis216.models.Invoice;
+import com.projectjavasneaker.backendis216.models.InvoiceDetails;
 import com.projectjavasneaker.backendis216.models.User;
 import com.projectjavasneaker.backendis216.payload.response.PageResponse;
 import com.projectjavasneaker.backendis216.payload.response.ResponseObject;
 import com.projectjavasneaker.backendis216.repository.UserRepository;
+import com.projectjavasneaker.backendis216.services.InvoiceDetailsService;
+import com.projectjavasneaker.backendis216.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +29,10 @@ import java.util.stream.Stream;
 public class UserController {
     @Autowired
     UserRepository userRepository;
-
+    @Autowired
+    private InvoiceDetailsService invoiceDetailsService;
+    @Autowired
+    private InvoiceService invoiceService;
     @GetMapping("/all-user")
     @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ResponseObject> getAllUsers(){
@@ -85,5 +92,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ResponseObject("failed", "cannot find product to delete", "")
         );
+    }
+    // lấy ra danh sách sản phẩm user đã mua
+    @GetMapping("/{userId}/list-product")
+    public ResponseEntity<List<InvoiceDetails>> getPurchasedProducts(@PathVariable Long userId) {
+        List<InvoiceDetails> purchasedProducts = invoiceDetailsService.getInvoiceDetailsByUserId(userId);
+        return ResponseEntity.ok(purchasedProducts);
+    }
+    @GetMapping("/{userId}/all-invoices")
+    public ResponseEntity<List<Invoice>> getUserInvoices(@PathVariable Long userId) {
+        List<Invoice> invoices = invoiceService.getInvoicesByUserId(userId);
+        return ResponseEntity.ok(invoices);
     }
 }

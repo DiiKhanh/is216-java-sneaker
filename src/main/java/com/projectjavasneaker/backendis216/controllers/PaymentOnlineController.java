@@ -2,7 +2,10 @@ package com.projectjavasneaker.backendis216.controllers;
 
 
 import com.projectjavasneaker.backendis216.config.OnlinePaymentConfig;
+import com.projectjavasneaker.backendis216.models.Invoice;
 import com.projectjavasneaker.backendis216.payload.response.ResponseObject;
+import com.projectjavasneaker.backendis216.services.InvoiceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +21,16 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/payment_online")
 public class PaymentOnlineController {
+    @Autowired
+    private InvoiceService invoiceService;
     @GetMapping("/create_payment/{money}")
     public ResponseEntity<?> createPayment(@PathVariable long money) throws UnsupportedEncodingException {
+        // Tạo hóa đơn mới
+        Invoice invoice = invoiceService.createInvoice();
+        // Lưu hóa đơn vào cơ sở dữ liệu
+        invoiceService.saveInvoice(invoice);
+
+
 
         long amount = money*100;
 //        String vnp_OrderInfo = req.getParameter("vnp_OrderInfo");
@@ -117,16 +128,19 @@ public class PaymentOnlineController {
         );
     }
 
-    @GetMapping("payment_infor")
+    @GetMapping("payment_infor/{invoiceId}")
     public ResponseEntity<?> transaction(
+            @PathVariable long invoiceId,
             @RequestParam(value = "vnp_Amount") String amount,
             @RequestParam(value = "vnp_ResponseCode") String responseCode
     ){
         if(responseCode.equals("00")){
+            invoiceService.updatePaymentStatus(invoiceId, "paid");
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject("OK", "Successfully", "")
             );
         }
+        invoiceService.updatePaymentStatus(invoiceId, "paid");
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("FAILED", "FAILED", "paymentUrl")
         );

@@ -1,5 +1,7 @@
 package com.projectjavasneaker.backendis216.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 
@@ -15,6 +17,7 @@ public class InvoiceDetails {
 
     @ManyToOne
     @JoinColumn(name = "INVOICEID", referencedColumnName = "INVOICEID")
+    @JsonIgnore
     private Invoice invoice;
 
     @ManyToOne
