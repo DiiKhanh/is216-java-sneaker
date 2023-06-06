@@ -1,9 +1,13 @@
 package com.projectjavasneaker.backendis216.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Table(name = "products")
@@ -27,6 +31,8 @@ public class Product {
     private String brandName;
     private String designer;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private Set<CartDetails> cartDetails;
 
     public Product(){
 
