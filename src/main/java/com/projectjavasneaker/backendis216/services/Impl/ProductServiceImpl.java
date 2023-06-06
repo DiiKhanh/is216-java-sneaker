@@ -1,7 +1,8 @@
-package com.projectjavasneaker.backendis216.services;
+package com.projectjavasneaker.backendis216.services.Impl;
 
 import com.projectjavasneaker.backendis216.models.Product;
 import com.projectjavasneaker.backendis216.repository.ProductRepository;
+import com.projectjavasneaker.backendis216.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,7 @@ import java.util.Optional;
 
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
 
     @Autowired

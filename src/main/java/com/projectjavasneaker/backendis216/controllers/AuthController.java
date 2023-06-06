@@ -137,7 +137,7 @@ public class AuthController {
             });
         }
         Cart cart = new Cart();
-        user.setCart(cart);
+        //user.setCart(cart);
         cart.setUser(user);
 
         cartRepository.save(cart);

@@ -29,6 +29,26 @@ public class ProductController {
 
     @Autowired
     ProductService productService;
+    @GetMapping("/all-products")
+    ResponseEntity<PageResponse> getAllProductPage(@RequestParam Optional<Integer> page){
+        Page<Product> pageProducts = productRepository.findAll(PageRequest.of(page.orElse(0), 6));
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new PageResponse(page, pageProducts.getSize(), pageProducts.getTotalElements(),
+                        pageProducts.getTotalPages(),
+                        pageProducts.getContent()
+                )
+        );
+    }
+    @GetMapping("/shop-products")
+    ResponseEntity<PageResponse> getShopProductPage(@RequestParam Optional<Integer> page){
+        Page<Product> pageProducts = productRepository.findAll(PageRequest.of(page.orElse(0), 10));
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new PageResponse(page, pageProducts.getSize(), pageProducts.getTotalElements(),
+                        pageProducts.getTotalPages(),
+                        pageProducts.getContent()
+                )
+        );
+    }
 
     @GetMapping("/all")
     ResponseEntity<ResponseObject> GetProducts(){

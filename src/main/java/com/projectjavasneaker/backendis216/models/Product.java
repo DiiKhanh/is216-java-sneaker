@@ -31,8 +31,11 @@ public class Product {
     private String brandName;
     private String designer;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     private Set<CartDetails> cartDetails;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
+    private Set<InvoiceDetails> invoiceDetails;
 
     public Product(){
 

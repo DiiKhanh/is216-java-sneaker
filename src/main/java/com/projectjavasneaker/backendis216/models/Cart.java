@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -18,8 +20,10 @@ public class Cart {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-    private Set<CartDetails> cartDetails;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "cart",cascade = CascadeType.ALL)
+    //@JoinColumn(name = "cart_id") // Tên cột khóa ngoại trong bảng CartDetails
+    private List<CartDetails> cartDetails;
+
 
     public void updateTotalPrice() {
         BigDecimal totalPrice = BigDecimal.ZERO;
@@ -29,11 +33,27 @@ public class Cart {
         this.total = totalPrice;
     }
 
-    public Set<CartDetails> getCartDetails() {
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public List<CartDetails> getCartDetails() {
         return cartDetails;
     }
 
-    public void setCartDetails(Set<CartDetails> cartDetails) {
+    public Long getCartId() {
+        return CartId;
+    }
+
+    public void setCartId(Long cartId) {
+        CartId = cartId;
+    }
+
+    //    public List<CartDetails> getAllCartDetails() {
+//        return new ArrayList<>(cartDetails);
+//    }
+
+    public void setCartDetails(List<CartDetails> cartDetails) {
         this.cartDetails = cartDetails;
     }
 

@@ -1,5 +1,6 @@
 package com.projectjavasneaker.backendis216.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.Entity;
@@ -16,7 +17,9 @@ public class CartDetails {
     private Long CartDetailsId;
     @ManyToOne
     @JoinColumn(name = "CartID", referencedColumnName = "CARTID")
+    @JsonIgnore
     private Cart cart;
+
     @ManyToOne
     @JoinColumn(name = "ProductId", referencedColumnName = "id")
     private Product product;
@@ -34,6 +37,7 @@ public class CartDetails {
     public void setCart(Cart cart) {
         this.cart = cart;
     }
+
 
     public Product getProduct() {
         return product;
