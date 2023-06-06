@@ -25,10 +25,10 @@ public class PaymentOnlineController {
     private InvoiceService invoiceService;
     @GetMapping("/create_payment/{money}")
     public ResponseEntity<?> createPayment(@PathVariable long money) throws UnsupportedEncodingException {
-        // Tạo hóa đơn mới
-        Invoice invoice = invoiceService.createInvoice();
-        // Lưu hóa đơn vào cơ sở dữ liệu
-        invoiceService.saveInvoice(invoice);
+//        // Tạo hóa đơn mới
+//        Invoice invoice = invoiceService.createInvoice();
+//        // Lưu hóa đơn vào cơ sở dữ liệu
+//        invoiceService.saveInvoice(invoice);
 
 
 
