@@ -1,9 +1,11 @@
 package com.projectjavasneaker.backendis216.controllers;
 
 
+import com.projectjavasneaker.backendis216.Exception.NotFoundException;
 import com.projectjavasneaker.backendis216.models.Invoice;
 import com.projectjavasneaker.backendis216.models.InvoiceDetails;
 import com.projectjavasneaker.backendis216.models.User;
+import com.projectjavasneaker.backendis216.payload.request.ChangePassword;
 import com.projectjavasneaker.backendis216.payload.response.PageResponse;
 import com.projectjavasneaker.backendis216.payload.response.ResponseObject;
 import com.projectjavasneaker.backendis216.repository.UserRepository;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,17 +36,20 @@ public class UserController {
     private InvoiceDetailsService invoiceDetailsService;
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    PasswordEncoder encoder;
+
     @GetMapping("/all-user")
     @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ResponseObject> getAllUsers(){
         List<User> users = userRepository.findAll();
         if(users.size() > 0){
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("ok","get all products successfully", users)
+                    new ResponseObject("ok","get all users successfully", users)
             );
         }
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
-                new ResponseObject("ok", "cannot find product", "")
+                new ResponseObject("ok", "cannot find users", "")
         );
     }
     @GetMapping("/all")
@@ -59,23 +65,22 @@ public class UserController {
     }
 
 //    sua
-//@PutMapping("/{id}")
-//@PreAuthorize("hasRole('ADMIN')")
-//ResponseEntity<ResponseObject> UpdateProduct(@PathVariable Long id, @RequestBody User newUser){
-//    User existUser = userRepository.findById(id).map((user)->{
-//        user.setAddress(newUser.getAddress());
-//        user.setBirth(newUser.getBirth());
-//        user.setGender(newUser.getGender());
-//        user.setPhone(newUser.getPhone());
-//        return userRepository.save(user);
-//    }).orElseGet(()->{
-//        return userRepository.save(newUser);
-//    });
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(
-//            new ResponseObject("ok", "updated product success", existUser)
-//    );
-//}
+@PutMapping("/{id}")
+@PreAuthorize("hasRole('ADMIN')")
+ResponseEntity<ResponseObject> UpdateUser(@PathVariable Long id, @RequestBody User newUser){
+    User existUser = userRepository.findById(id).map((user)->{
+        user.setAddress(newUser.getAddress());
+        user.setEmail(newUser.getEmail());
+        user.setPhone(newUser.getPhone());
+        return userRepository.save(user);
+    }).orElseGet(()->{
+        return userRepository.save(newUser);
+    });
+
+    return ResponseEntity.status(HttpStatus.OK).body(
+            new ResponseObject("ok", "updated user success", existUser)
+    );
+}
 
 //    xoa
     @DeleteMapping("/{id}")
@@ -86,11 +91,11 @@ public class UserController {
             userRepository.deleteById(id);
             List<User> users = userRepository.findAll();
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("ok", "Delete product successfully", users)
+                    new ResponseObject("ok", "Delete user successfully", users)
             );
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ResponseObject("failed", "cannot find product to delete", "")
+                new ResponseObject("failed", "cannot find user to delete", "")
         );
     }
     // lấy ra danh sách sản phẩm user đã mua
@@ -104,4 +109,41 @@ public class UserController {
         List<Invoice> invoices = invoiceService.getInvoicesByUserId(userId);
         return ResponseEntity.ok(invoices);
     }
+
+    @PutMapping("/profile/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    ResponseEntity<ResponseObject> UpdateUserProfile(@PathVariable Long id, @RequestBody User newUser){
+        User existUser = userRepository.findById(id).map((user)->{
+            user.setAddress(newUser.getAddress());
+            user.setEmail(newUser.getEmail());
+            user.setPhone(newUser.getPhone());
+            return userRepository.save(user);
+        }).orElseGet(()->{
+            return userRepository.save(newUser);
+        });
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("ok", "updated user success", existUser)
+        );
+    }
+
+    @PutMapping("/changePassword/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    ResponseEntity<ResponseObject> ChangePassword(@PathVariable Long id, @RequestBody ChangePassword changePassword){
+
+
+
+        Optional<User> existUser = userRepository.findById(id).map((user)->{
+            if(!encoder.matches(changePassword.getCurrentPass(), user.getPassword())){
+                throw new NotFoundException("old password is not correct");
+            }
+            user.setPassword(encoder.encode(changePassword.getPassword()));
+            return userRepository.save(user);
+        });
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("ok", "change password user success", existUser)
+        );
+    }
+
 }

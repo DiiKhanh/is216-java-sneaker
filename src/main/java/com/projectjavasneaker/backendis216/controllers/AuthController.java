@@ -73,6 +73,19 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
+       if(userDetails.getCart() == null){
+           return ResponseEntity.ok(new JwtResponse(jwt,
+                   userDetails.getId(),
+                   userDetails.getUsername(),
+                   userDetails.getEmail(),
+                   roles,
+                   userDetails.getAddress(),
+                   userDetails.getPhone(),
+                   userDetails.getGender(),
+                   userDetails.getBirth()
+           ));
+       }
+
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
@@ -81,8 +94,10 @@ public class AuthController {
                 userDetails.getAddress(),
                 userDetails.getPhone(),
                 userDetails.getGender(),
-                userDetails.getBirth()
-                ));
+                userDetails.getBirth(),
+                userDetails.getCart().getCartId()
+        ));
+
     }
 
     @PostMapping("/signup")

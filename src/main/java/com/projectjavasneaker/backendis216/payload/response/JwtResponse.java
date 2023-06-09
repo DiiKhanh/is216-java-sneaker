@@ -1,5 +1,7 @@
 package com.projectjavasneaker.backendis216.payload.response;
 
+import com.projectjavasneaker.backendis216.models.Cart;
+
 import java.util.List;
 
 public class JwtResponse {
@@ -15,6 +17,8 @@ public class JwtResponse {
     private String gender;
 
     private String birth;
+
+    private Long cartId;
 
     public JwtResponse(String accessToken, Long id, String username, String email, List<String> roles) {
         this.token = accessToken;
@@ -35,6 +39,20 @@ public class JwtResponse {
         this.phone = phone;
         this.gender = gender;
         this.birth = birth;
+    }
+    public JwtResponse(String accessToken, Long id, String username, String email, List<String> roles
+            ,String address, String phone, String gender, String birth, Long cart
+    ) {
+        this.token = accessToken;
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.roles = roles;
+        this.address = address;
+        this.phone = phone;
+        this.gender = gender;
+        this.birth = birth;
+        this.cartId = cart;
     }
 
     public String getAccessToken() {
@@ -111,5 +129,12 @@ public class JwtResponse {
 
     public void setBirth(String birth) {
         this.birth = birth;
+    }
+    public Long getCartId() {
+        return cartId;
+    }
+
+    public void setCartId(Long cartId) {
+        this.cartId = cartId;
     }
 }

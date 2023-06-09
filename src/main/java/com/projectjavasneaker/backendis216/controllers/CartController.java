@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("/api/cart")
 public class CartController {
     @Autowired
     private CartService cartService;
@@ -33,7 +34,7 @@ public class CartController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> addProductToCart(@PathVariable Long cartId,
                                               @RequestBody CartRequest request) {
-        cartService.addProductToCart(cartId, request.getProductId(), 1);
+        cartService.addProductToCart(cartId, request.getProductId(), request.getQuantity());
         return ResponseEntity.ok("Product added to cart successfully.");
     }
 

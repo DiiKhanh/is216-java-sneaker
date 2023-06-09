@@ -56,7 +56,7 @@ public class CartServiceImpl implements CartService {
         for (CartDetails cartDetail : cart.getCartDetails()) {
             if (cartDetail.getProduct().getId().equals(productId)) {
                 // Sản phẩm đã tồn tại trong giỏ hàng, tăng giá trị quantity
-                int newQuantity = cartDetail.getQuantity() + 1;
+                int newQuantity = cartDetail.getQuantity() + quantity;
                 cartDetail.setQuantity(newQuantity);
                 cartDetail.setTotal(productPrice.multiply(BigDecimal.valueOf(newQuantity)));
                 productExists = true;

@@ -3,6 +3,7 @@ package com.projectjavasneaker.backendis216.security.services;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.projectjavasneaker.backendis216.models.Cart;
 import com.projectjavasneaker.backendis216.models.ERole;
 import com.projectjavasneaker.backendis216.models.Role;
 import com.projectjavasneaker.backendis216.models.User;
@@ -29,7 +30,7 @@ public class UserDetailsImpl implements UserDetails {
     private String gender;
 
     private String birth;
-
+    private Cart cart;
     private Collection<? extends GrantedAuthority> authorities;
     public UserDetailsImpl(Long id, String username, String email, String password,
                            Collection<? extends GrantedAuthority> authorities, String role) {
@@ -56,6 +57,23 @@ public class UserDetailsImpl implements UserDetails {
         this.gender = gender;
         this.birth = birth;
     }
+//
+public UserDetailsImpl(Long id, String username, String email, String password,
+                       Collection<? extends GrantedAuthority> authorities, String role
+        ,String address, String phone, String gender, String birth, Cart cart
+) {
+    this.id = id;
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.authorities = authorities;
+    this.role = role;
+    this.address = address;
+    this.phone = phone;
+    this.gender = gender;
+    this.birth = birth;
+    this.cart = cart;
+}
 
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
@@ -72,7 +90,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getAddress(),
                 user.getPhone(),
                 user.getGender(),
-                user.getBirth()
+                user.getBirth(),
+                user.getCart()
                 );
     }
 
@@ -105,6 +124,8 @@ public class UserDetailsImpl implements UserDetails {
     public String getBirth() {
         return birth;
     }
+
+    public Cart getCart(){return cart;}
 
     @Override
     public String getPassword() {

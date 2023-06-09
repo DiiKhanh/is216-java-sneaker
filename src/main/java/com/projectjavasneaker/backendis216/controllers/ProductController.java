@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,6 +60,33 @@ public class ProductController {
     @GetMapping("/shop-products")
     ResponseEntity<PageResponse> getShopProductPage(@RequestParam Optional<Integer> page){
         Page<Product> pageProducts = productRepository.findAll(PageRequest.of(page.orElse(0), 10));
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new PageResponse(page, pageProducts.getSize(), pageProducts.getTotalElements(),
+                        pageProducts.getTotalPages(),
+                        pageProducts.getContent()
+                )
+        );
+    }
+
+    @GetMapping("/sort-products")
+    ResponseEntity<PageResponse> getShopProductPageSort(@RequestParam Optional<Integer> page,
+                                                        @RequestParam Optional<String> sortBy,
+                                                        @RequestParam Integer asc
+                                                        ){
+       if(asc == 1){
+           Page<Product> pageProducts = productRepository.findAll(PageRequest.of(page.orElse(0), 10,
+                   Sort.Direction.ASC, sortBy.orElse("productPrice")
+           ));
+           return ResponseEntity.status(HttpStatus.OK).body(
+                   new PageResponse(page, pageProducts.getSize(), pageProducts.getTotalElements(),
+                           pageProducts.getTotalPages(),
+                           pageProducts.getContent()
+                   )
+           );
+       }
+        Page<Product> pageProducts = productRepository.findAll(PageRequest.of(page.orElse(0), 10,
+                Sort.Direction.DESC, sortBy.orElse("productPrice")
+        ));
         return ResponseEntity.status(HttpStatus.OK).body(
                 new PageResponse(page, pageProducts.getSize(), pageProducts.getTotalElements(),
                         pageProducts.getTotalPages(),
