@@ -4,16 +4,7 @@
   </a>
 </p>
 
-<h1 align="center"><b>LẬP TRÌNH JAVA - IS216</b></h1>
 
-## GIỚI THIỆU MÔN HỌC
-
--    **Tên môn học:** LẬP TRÌNH JAVA
--    **Mã môn học:** IS216
--    **Mã lớp:** IS216.N21
--    **Năm học:** HK2 (2022 - 2023)
--    **Giảng viên:** ThS. Mai Xuân Hùng
--    **Email:** hungmx@uit.edu.vn
 
 ## GIỚI THIỆU ĐỒ ÁN
 
