@@ -1,4 +1,4 @@
---- --- -- IS201.N.2 Hệ quản trị cơ sở dữ liệu -- --- ---
+
 ---- --- ---         Báo cáo đồ án          --- --- ----
 
 -- Đề tài: Trang web bán giày 
@@ -9,52 +9,191 @@
     --                21522351 - Nguyễn Ngọc Hà My
     
 -- Database của đồ án:
--- Vì sản phẩm của nhóm sử dụng backend là Spring boot, kết hợp với Spring JPA nên
--- sẽ tạo các table và các mối quan hệ giữa các bảng bằng code, chỉ cần chạy code
--- các table sẽ được tạo ở database.
-
 -- Lưu ý: DBMS sử dụng là Oracle
 
--- Các bảng không tạo ở phần back end: Category, Brand, ProductReview
+CREATE TABLE BRAND (BRANDID NUMBER(10,0), BRANDNAME VARCHAR2(50));
 
--- Table ProductReview --
-CREATE TABLE ProductReview (
-  ReviewID NUMBER PRIMARY KEY,
-  UserID NUMBER(19,0) NOT NULL,
-  ProductID NUMBER(19,0) NOT NULL,
-  Rating NUMBER(1,0) NOT NULL,
-  Comments VARCHAR2(500),
-  ReviewDate DATE NOT NULL,
-  CONSTRAINT FK_ProductReview_UserID FOREIGN KEY (UserID) REFERENCES USERS(ID),
-  CONSTRAINT FK_ProductReview_ProductID FOREIGN KEY (ProductID) REFERENCES PRODUCTS(ID)
-);
+CREATE TABLE CART (CARTID NUMBER(19,0) GENERATED ALWAYS AS IDENTITY MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 20 NOORDER NOCYCLE NOKEEP NOSCALE, TOTAL NUMBER(19,2), USER_ID NUMBER(19,0));
 
--- Table Brand --
-CREATE TABLE Brand (
-    BrandId   NUMBER(10) PRIMARY KEY,
-    BrandName VARCHAR2(50) NOT NULL UNIQUE
-);
--- Table Category --
-CREATE TABLE Category (
-    CategoryId   NUMBER(10) PRIMARY KEY,
-    CategoryName VARCHAR2(50) NOT NULL UNIQUE
-);
+CREATE TABLE CART_DETAILS (CART_DETAILSID NUMBER(19,0) GENERATED ALWAYS AS IDENTITY MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 20 NOORDER NOCYCLE NOKEEP NOSCALE, QUANTITY NUMBER(10,0), TOTAL NUMBER(19,2), CARTID NUMBER(19,0), PRODUCT_ID NUMBER(19,0));
 
---- ======================================================================== ---
+CREATE TABLE CATEGORY (CATEGORYID NUMBER(10,0), CATEGORYNAME VARCHAR2(50));
+
+CREATE TABLE INVOICE (INVOICEID NUMBER(19,0) GENERATED ALWAYS AS IDENTITY MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 20 NOORDER NOCYCLE NOKEEP NOSCALE, ORDER_DATE TIMESTAMP (6), SHIP_ADDRESS VARCHAR2(255 CHAR), STATUS VARCHAR2(255 CHAR), TOTAL_PRICE NUMBER(19,2), USER_ID NUMBER(19,0));
+
+CREATE TABLE INVOICE_DETAILS (INVOICE_DETAILS_ID NUMBER(19,0) GENERATED ALWAYS AS IDENTITY MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 20 NOORDER NOCYCLE NOKEEP NOSCALE, DISCOUNT NUMBER(19,2), PRICE NUMBER(19,2), QUANTITY NUMBER(10,0), INVOICEID NUMBER(19,0), PRODUCT_ID NUMBER(19,0));
+
+CREATE TABLE PRODUCTREVIEW (REVIEWID NUMBER, USERID NUMBER(19,0), PRODUCTID NUMBER(19,0), RATING NUMBER(1,0), COMMENTS VARCHAR2(500), REVIEWDATE DATE);
+
+CREATE TABLE PRODUCTS (ID NUMBER(19,0) GENERATED ALWAYS AS IDENTITY MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 20 NOORDER NOCYCLE NOKEEP NOSCALE, BRAND_NAME VARCHAR2(255 CHAR), CATEGORY VARCHAR2(255 CHAR), DESCRIPTION VARCHAR2(255 CHAR), DESIGNER VARCHAR2(255 CHAR), IMG_URL VARCHAR2(255 CHAR), PRODUCT_NAME VARCHAR2(255 CHAR), PRODUCT_PRICE NUMBER(19,2), QUANTITY NUMBER(10,0));
+
+CREATE TABLE ROLES (ID NUMBER(10,0) GENERATED ALWAYS AS IDENTITY MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 20 NOORDER NOCYCLE NOKEEP NOSCALE, NAME VARCHAR2(20 CHAR));
+
+CREATE TABLE USER_ROLES (USER_ID NUMBER(19,0), ROLE_ID NUMBER(10,0));
+
+CREATE TABLE USERS (ID NUMBER(19,0) GENERATED ALWAYS AS IDENTITY MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 20 NOORDER NOCYCLE NOKEEP NOSCALE, ADDRESS VARCHAR2(255 CHAR), BIRTH VARCHAR2(255 CHAR), EMAIL VARCHAR2(50 CHAR), GENDER VARCHAR2(255 CHAR), PASSWORD VARCHAR2(120 CHAR), PHONE VARCHAR2(255 CHAR), ROLE VARCHAR2(255 CHAR), USERNAME VARCHAR2(20 CHAR));
+
+SET DEFINE OFF;
+
+CREATE UNIQUE INDEX SYS_C008274 ON BRAND (BRANDID);
+
+CREATE UNIQUE INDEX SYS_C008275 ON BRAND (BRANDNAME);
+
+CREATE UNIQUE INDEX SYS_C008357 ON CART (CARTID);
+
+CREATE UNIQUE INDEX SYS_C008321 ON CART_DETAILS (CART_DETAILSID);
+
+CREATE UNIQUE INDEX SYS_C008277 ON CATEGORY (CATEGORYID);
+
+CREATE UNIQUE INDEX SYS_C008278 ON CATEGORY (CATEGORYNAME);
+
+CREATE UNIQUE INDEX SYS_C008324 ON INVOICE (INVOICEID);
+
+CREATE UNIQUE INDEX SYS_C008327 ON INVOICE_DETAILS (INVOICE_DETAILS_ID);
+
+CREATE UNIQUE INDEX SYS_C008270 ON PRODUCTREVIEW (REVIEWID);
+
+CREATE UNIQUE INDEX SYS_C008330 ON PRODUCTS (ID);
+
+CREATE UNIQUE INDEX SYS_C007868 ON ROLES (ID);
+
+CREATE UNIQUE INDEX SYS_C008360 ON USER_ROLES (USER_ID, ROLE_ID);
+
+CREATE UNIQUE INDEX SYS_C008362 ON USERS (ID);
+
+CREATE UNIQUE INDEX UKR43AF9AP4EDM43MMTQ01ODDJ6 ON USERS (USERNAME);
+
+CREATE UNIQUE INDEX UK6DOTKOTT2KJSP8VW4D0M25FB7 ON USERS (EMAIL);
+--------------------------------------------------------
+--  Constraints for Table BRAND
+--------------------------------------------------------
+
+ALTER TABLE BRAND MODIFY (BRANDNAME NOT NULL ENABLE);
+ALTER TABLE BRAND ADD PRIMARY KEY (BRANDID) USING INDEX ENABLE;
+ALTER TABLE BRAND ADD UNIQUE (BRANDNAME) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Constraints for Table CART
+--------------------------------------------------------
+
+ALTER TABLE CART MODIFY (CARTID NOT NULL ENABLE);
+ALTER TABLE CART ADD PRIMARY KEY (CARTID) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Constraints for Table CART_DETAILS
+--------------------------------------------------------
+
+ALTER TABLE CART_DETAILS MODIFY (CART_DETAILSID NOT NULL ENABLE);
+ALTER TABLE CART_DETAILS MODIFY (QUANTITY NOT NULL ENABLE);
+ALTER TABLE CART_DETAILS ADD PRIMARY KEY (CART_DETAILSID) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Constraints for Table CATEGORY
+--------------------------------------------------------
+
+ALTER TABLE CATEGORY MODIFY (CATEGORYNAME NOT NULL ENABLE);
+ALTER TABLE CATEGORY ADD PRIMARY KEY (CATEGORYID) USING INDEX ENABLE;
+ALTER TABLE CATEGORY ADD UNIQUE (CATEGORYNAME) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Constraints for Table INVOICE
+--------------------------------------------------------
+
+ALTER TABLE INVOICE MODIFY (INVOICEID NOT NULL ENABLE);
+ALTER TABLE INVOICE MODIFY (USER_ID NOT NULL ENABLE);
+ALTER TABLE INVOICE ADD PRIMARY KEY (INVOICEID) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Constraints for Table INVOICE_DETAILS
+--------------------------------------------------------
+
+ALTER TABLE INVOICE_DETAILS MODIFY (INVOICE_DETAILS_ID NOT NULL ENABLE);
+ALTER TABLE INVOICE_DETAILS MODIFY (QUANTITY NOT NULL ENABLE);
+ALTER TABLE INVOICE_DETAILS ADD PRIMARY KEY (INVOICE_DETAILS_ID) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Constraints for Table PRODUCTREVIEW
+--------------------------------------------------------
+
+ALTER TABLE PRODUCTREVIEW MODIFY (USERID NOT NULL ENABLE);
+ALTER TABLE PRODUCTREVIEW MODIFY (PRODUCTID NOT NULL ENABLE);
+ALTER TABLE PRODUCTREVIEW MODIFY (RATING NOT NULL ENABLE);
+ALTER TABLE PRODUCTREVIEW MODIFY (REVIEWDATE NOT NULL ENABLE);
+ALTER TABLE PRODUCTREVIEW ADD PRIMARY KEY (REVIEWID) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Constraints for Table PRODUCTS
+--------------------------------------------------------
+
+ALTER TABLE PRODUCTS MODIFY (ID NOT NULL ENABLE);
+ALTER TABLE PRODUCTS MODIFY (QUANTITY NOT NULL ENABLE);
+ALTER TABLE PRODUCTS ADD PRIMARY KEY (ID) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Constraints for Table ROLES
+--------------------------------------------------------
+
+ALTER TABLE ROLES MODIFY (ID NOT NULL ENABLE);
+ALTER TABLE ROLES ADD PRIMARY KEY (ID) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Constraints for Table USER_ROLES
+--------------------------------------------------------
+
+ALTER TABLE USER_ROLES MODIFY (USER_ID NOT NULL ENABLE);
+ALTER TABLE USER_ROLES MODIFY (ROLE_ID NOT NULL ENABLE);
+ALTER TABLE USER_ROLES ADD PRIMARY KEY (USER_ID, ROLE_ID) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Constraints for Table USERS
+--------------------------------------------------------
+
+ALTER TABLE USERS MODIFY (ID NOT NULL ENABLE);
+ALTER TABLE USERS ADD PRIMARY KEY (ID) USING INDEX ENABLE;
+ALTER TABLE USERS ADD CONSTRAINT UKR43AF9AP4EDM43MMTQ01ODDJ6 UNIQUE (USERNAME) USING INDEX ENABLE;
+ALTER TABLE USERS ADD CONSTRAINT UK6DOTKOTT2KJSP8VW4D0M25FB7 UNIQUE (EMAIL) USING INDEX ENABLE;
+
+--------------------------------------------------------
+--  Ref Constraints for Table CART
+--------------------------------------------------------
+
+ALTER TABLE CART ADD CONSTRAINT FKG5UHI8VPSUY0LGLOXK2H4W5O6 FOREIGN KEY (USER_ID) REFERENCES USERS (ID) ENABLE;
+
+--------------------------------------------------------
+--  Ref Constraints for Table CART_DETAILS
+--------------------------------------------------------
+
+ALTER TABLE CART_DETAILS ADD CONSTRAINT FKCN1Y9ER648NIQYW2O6XTS7260 FOREIGN KEY (CARTID) REFERENCES CART (CARTID) ENABLE;
+ALTER TABLE CART_DETAILS ADD CONSTRAINT FK9RLIC3AYNL3G75JVEDKX84LHV FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS (ID) ENABLE;
+
+--------------------------------------------------------
+--  Ref Constraints for Table INVOICE
+--------------------------------------------------------
+
+ALTER TABLE INVOICE ADD CONSTRAINT FKC8JOTSKR93810VGN75QLBUSW2 FOREIGN KEY (USER_ID) REFERENCES USERS (ID) ENABLE;
+
+--------------------------------------------------------
+--  Ref Constraints for Table INVOICE_DETAILS
+--------------------------------------------------------
+
+ALTER TABLE INVOICE_DETAILS ADD CONSTRAINT FKJ26286QV1HDS18BLKJ46TJIY0 FOREIGN KEY (INVOICEID) REFERENCES INVOICE (INVOICEID) ENABLE;
+ALTER TABLE INVOICE_DETAILS ADD CONSTRAINT FKCHHYDD0D280RUIG3HMARS76WA FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS (ID) ENABLE;
+
+--------------------------------------------------------
+--  Ref Constraints for Table USER_ROLES
+--------------------------------------------------------
+
+ALTER TABLE USER_ROLES ADD CONSTRAINT FKH8CIRAMU9CC9Q3QCQIV4UE8A6 FOREIGN KEY (ROLE_ID) REFERENCES ROLES (ID) ENABLE;
+ALTER TABLE USER_ROLES ADD CONSTRAINT FKHFH9DX7W3UBF1CO1VDEV94G3F FOREIGN KEY (USER_ID) REFERENCES USERS (ID);
 
 -- Insert dữ liệu sản phẩm vào bảng Products
-
-
-
 INSERT INTO PRODUCTS (BRAND_NAME, CATEGORY, DESCRIPTION, DESIGNER, IMG_URL, PRODUCT_NAME, PRODUCT_PRICE, QUANTITY) VALUES (
 'Air Jordan',  
 'basketball',  
 'Nike Air Jordan 1 Retro High OG Shadow 2018 là phiên bản tái phát hành từ bản gốc năm 1985. Đôi giày có phần trên là chất liệu da màu đen pha xám, với đế trắng và mặt đế đen. Đặc biệt, trên đôi giày có logo OG Nike Air.', 
 'Peter Moore', 
 'https://image.goat.com/750/attachments/product_template_pictures/images/011/119/994/original/218099_00.png.png',  
-'Air Jordan 1 Retro High OG Shadow 2018',  
-2000000,  
-20); 
+'Air Jordan 1 Retro High OG Shadow 2018', 2000000, 20); 
 /
 INSERT INTO PRODUCTS (BRAND_NAME, CATEGORY, DESCRIPTION, DESIGNER, IMG_URL, PRODUCT_NAME, PRODUCT_PRICE, QUANTITY) VALUES (
 'Air Jordan',  
@@ -72,9 +211,7 @@ INSERT INTO PRODUCTS (BRAND_NAME, CATEGORY, DESCRIPTION, DESIGNER, IMG_URL, PROD
 'Air Jordan 11 Retro Space Jam phiên bản retro năm 2016 này đã trở thành một trong những lần ra mắt thành công nhất của Nike tính đến thời điểm đó.',
 'Tinker Hatfield', 
 'https://image.goat.com/750/attachments/product_template_pictures/images/008/654/900/original/52015_00.png.png',  
-'Air Jordan 11 Retro Space Jam 2016',  
-2500000,  
-16); 
+'Air Jordan 11 Retro Space Jam 2016', 2500000,16); 
 /
 INSERT INTO PRODUCTS (BRAND_NAME, CATEGORY, DESCRIPTION, DESIGNER, IMG_URL, PRODUCT_NAME, PRODUCT_PRICE, QUANTITY) VALUES (
 'Air Jordan',  
@@ -193,49 +330,31 @@ INSERT INTO PRODUCTS (BRAND_NAME, CATEGORY, DESCRIPTION, DESIGNER, IMG_URL, PROD
 'Marquis Mills', 
 'https://image.goat.com/750/attachments/product_template_pictures/images/018/552/840/original/476518_00.png.png',
 'Tyler, The Creator x Foot Locker x Chuck 70 Artist Series',   
-1000000, 
-20); 
+1000000, 20); 
 /
--- Insert dữ liệu Brand vào bảng Brand
-INSERT INTO Brand (BrandId, BrandName)
-VALUES (1, 'nike');
+-- Insert dữ liệu vào bảng Brands
 
-INSERT INTO Brand (BrandId, BrandName)
-VALUES (2, 'adidas');
+Insert into BRAND (BRANDID,BRANDNAME) values (9,'Air Jordan ');
+Insert into BRAND (BRANDID,BRANDNAME) values (10,'Converse');
+Insert into BRAND (BRANDID,BRANDNAME) values (2,'adidas');
+Insert into BRAND (BRANDID,BRANDNAME) values (4,'adlv');
+Insert into BRAND (BRANDID,BRANDNAME) values (5,'balenciaga');
+Insert into BRAND (BRANDID,BRANDNAME) values (7,'drew');
+Insert into BRAND (BRANDID,BRANDNAME) values (8,'essential');
+Insert into BRAND (BRANDID,BRANDNAME) values (6,'mlb');
+Insert into BRAND (BRANDID,BRANDNAME) values (1,'nike');
+Insert into BRAND (BRANDID,BRANDNAME) values (3,'puma');
 
-INSERT INTO Brand (BrandId, BrandName)
-VALUES (3, 'puma');
+-- Insert dữ liệu vào bảng Category
 
-INSERT INTO Brand (BrandId, BrandName)
-VALUES (4, 'adlv');
+Insert into CATEGORY (CATEGORYID,CATEGORYNAME) values (3,'basketball');
+Insert into CATEGORY (CATEGORYID,CATEGORYNAME) values (1,'lifestyle');
+Insert into CATEGORY (CATEGORYID,CATEGORYNAME) values (2,'running');
 
-INSERT INTO Brand (BrandId, BrandName)
-VALUES (5, 'balenciaga');
-
-INSERT INTO Brand (BrandId, BrandName)
-VALUES (6, 'mlb');
-
-INSERT INTO Brand (BrandId, BrandName)
-VALUES (7, 'drew');
-
-INSERT INTO Brand (BrandId, BrandName)
-VALUES (8, 'essential');
-
-INSERT INTO Brand (BrandId, BrandName)
-VALUES (9, 'Air Jordan ');
-
-INSERT INTO Brand (BrandId, BrandName)
-VALUES (10, 'Converse');
-
--- Insert dữ liệu Category vào bảng Category
-INSERT INTO Category (CategoryId, CategoryName)
-VALUES (1, 'lifestyle');
-
-INSERT INTO Category (CategoryId, CategoryName)
-VALUES (2, 'running');
-
-INSERT INTO Category (CategoryId, CategoryName)
-VALUES (3, 'basketball');
+-- -- Insert dữ liệu vào bảng Roles
+INSERT INTO roles(name) VALUES('ROLE_USER');
+INSERT INTO roles(name) VALUES('ROLE_ADMIN');
+commit;
 
 --- ======================================================================== ---
 
